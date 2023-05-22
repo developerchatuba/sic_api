@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Traits\ApiResponser;
+use AWS\CRT\HTTP\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -45,7 +47,7 @@ class AuthController extends Controller
      *              @OA\Property(property="password", type="string", example="123456")
      *          ),
      *      ),
-     *      @OA\Response(response=200, description="Login"),
+     *      @OA\Response(response=200, description="OK"),
      *      @OA\Response(response=400, description="Bad request"),
      *      @OA\Response(response=404, description="Resource Not Found")
      * )
@@ -58,6 +60,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        
         return $this->respondWithToken($token);
     }
 
@@ -143,10 +146,15 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+
+        $data = auth()->user();
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'id' => $data['id'],
+            'nome'=> $data['nome'],
+            'usuario' => $data['usuario'],
         ]);
     }
 }
