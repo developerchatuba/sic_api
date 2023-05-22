@@ -1,0 +1,55 @@
+FROM php:8.2-apache
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  libzip-dev \
+  libxml2-dev \
+  mariadb-client \
+  zip \
+  unzip \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN pecl install zip pcov
+RUN docker-php-ext-enable zip \
+  && docker-php-ext-install pdo_mysql \
+  && docker-php-ext-install sqlsrv \
+  && docker-php-ext-install pdo_sqlsrv \
+  && docker-php-ext-install bcmath \
+  && docker-php-ext-install soap \
+  && docker-php-source delete
+
+WORKDIR /var/www/html
+COPY . .
+
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN echo "ServerName localhost" > /etc/apache2/conf-enabled/server-name.conf
+
+#COPY ./conf/php.ini /usr/local/etc/php/php.ini
+#COPY ./conf/default.conf /etc/apache2/sites-enabled/default.conf
+#COPY ./conf/default-rewrite.conf /etc/apache2/default-rewrite.conf
+#COPY ./conf/apache2.conf /etc/apache2/apache2.conf
+
+RUN a2enmod rewrite headers
+RUN a2enmod ssl
+
+
+RUN a2enmod rewrite
+
+RUN find . -type d -print0 | xargs -0 chmod 755 \
+    && find . -type f -print0 | xargs -0 chmod 644 \
+    && chown -R www-data:www-data ./bootstrap/cache \
+    && chown -R www-data:www-data ./storage \
+    && chmod -R 775 ./bootstrap/cache \
+    && chmod -R 775 ./storage
+
+#RUN composer self-update --1
+RUN composer install
+
+#RUN chmod 777 /var/www/html/
+#RUN chown -Rf www-data:www-data /var/www/html
+
+
+
