@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return 'api 1.0.1';
+    return 'api 1.0.2';
 });
