@@ -75,6 +75,3 @@ COPY . .
 
 CMD php artisan serve --host=0.0.0.0 --port 80
 
-
-RUN php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
-RUN php artisan l5-swagger:generate
