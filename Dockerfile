@@ -69,8 +69,6 @@ COPY composer.json .
 
 RUN composer install --no-scripts
 RUN composer self-update --1
-RUN php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
-RUN php artisan l5-swagger:generate
 
 COPY . .
 
