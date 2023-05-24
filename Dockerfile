@@ -73,7 +73,7 @@ RUN composer self-update --1
 
 COPY . .
 
-CMD php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
-CMD php artisan l5-swagger:generate
-CMD php artisan serve --host=0.0.0.0 --port 80
+CMD php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider" >> php artisan l5-swagger:generate >> php artisan serve --host=0.0.0.0 --port 80
+ 
+ 
 
